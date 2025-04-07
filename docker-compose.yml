@@ -1,0 +1,24 @@
+services:
+  filesystem:
+    build: ./filesystem
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./filesystem/app:/app
+    restart: unless-stopped
+
+  deadlock-simulator:
+    build: ./deadlock-simulator
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./deadlock-simulator/app:/app
+    restart: unless-stopped
+
+  concurrency-simulator:
+    build: ./concurrency-simulator
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./concurrency-simulator/app:/app
+    restart: unless-stopped
