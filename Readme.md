@@ -9,7 +9,6 @@ This repository contains a collection of FastAPI-based REST APIs that simulate v
   - [Dining Philosophers Problem](#dining-philosophers-problem)
 - [Deadlock Simulator](#deadlock-simulator)
 - [File System Simulator](#file-system-simulator)
-- [Installation and Usage](#installation-and-usage)
 - [API Documentation](#api-documentation)
 
 ## Concurrency Simulator
