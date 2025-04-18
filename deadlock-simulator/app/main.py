@@ -2,6 +2,23 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Set
 import uuid
+import requests
+
+USER = "user1"
+
+def send_analytics_event(user_id: str, lab_type: str, event_type: str, event_data: dict):
+    url = "http://usage-analytics:8000/analytics/event"
+    payload = {
+        "user_id": user_id,
+        "lab_type": lab_type,
+        "event_type": event_type,
+        "event_data": event_data
+    }
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"[Analytics] Failed to send event: {e}")
 
 app = FastAPI()
 
@@ -280,6 +297,14 @@ class ResourceReleaseRequest(BaseModel):
 @app.post("/processes/")
 def create_process(req: ProcessRequest):
     process = simulator.create_process(req.name)
+
+    send_analytics_event(
+        user_id=USER,
+        lab_type="deadlock-sim",
+        event_type="create_process",
+        event_data={"process_id": process.id, "process_name": process.name}
+    )
+
     return {
         "id": process.id,
         "name": process.name,

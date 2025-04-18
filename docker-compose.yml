@@ -13,6 +13,8 @@ services:
       - "8002:8000"
     volumes:
       - ./deadlock-simulator/app:/app
+    networks:
+      - virtual-labs-network
     restart: unless-stopped
 
   concurrency-simulator:
@@ -22,3 +24,7 @@ services:
     volumes:
       - ./concurrency-simulator/app:/app
     restart: unless-stopped
+
+networks:
+  virtual-labs-network:
+    external: true
