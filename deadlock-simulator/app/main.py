@@ -344,6 +344,16 @@ def get_process(process_id: str):
 @app.post("/resources/")
 def create_resource(req: ResourceRequest):
     resource = simulator.create_resource(req.name, req.units)
+    
+    send_analytics_event(
+        user_id=USER,
+        lab_type="deadlock-sim",
+        event_type="create_resource",
+        event_data={"resource_id": resource.id, 
+                    "resource_name": resource.name, 
+                    "resource_units": resource.units}
+    )
+
     return {
         "id": resource.id,
         "name": resource.name,
@@ -384,6 +394,20 @@ def get_resource(resource_id: str):
 def request_resource(process_id: str, req: ResourceAllocationRequest):
     try:
         success = simulator.request_resource(process_id, req.resource_id, req.units)
+
+        send_analytics_event(
+            user_id=USER,
+            lab_type="deadlock-sim",
+            event_type="request_resource",
+            event_data={
+                "process_id": process_id,
+                "resource_id": req.resource_id,
+                "resource_units": req.units,
+                "request_granted": success,
+                "process_status": simulator.processes[process_id].status
+            }
+        )
+
         return {
             "request_granted": success,
             "process_status": simulator.processes[process_id].status
@@ -395,6 +419,20 @@ def request_resource(process_id: str, req: ResourceAllocationRequest):
 def release_resource(process_id: str, req: ResourceReleaseRequest):
     try:
         success = simulator.release_resource(process_id, req.resource_id, req.units)
+
+        send_analytics_event(
+            user_id=USER,
+            lab_type="deadlock-sim",
+            event_type="release_resource",
+            event_data={
+                "process_id": process_id,
+                "resource_id": req.resource_id,
+                "resource_units": req.units,
+                "release_granted": success,
+                "process_status": simulator.processes[process_id].status
+            }
+        )
+
         return {"success": success}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
